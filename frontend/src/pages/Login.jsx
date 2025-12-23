@@ -39,7 +39,7 @@ export default function Login() {
 
             // Send the decoded info to your backend
             const res = await axios.post(
-                "http://localhost:5000/api/auth/google-login",
+                "/auth/google-login",
                 {
                     email: decoded.email,
                     name: decoded.name,

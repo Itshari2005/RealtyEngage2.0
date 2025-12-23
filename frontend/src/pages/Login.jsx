@@ -1,5 +1,4 @@
 import { GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -38,7 +37,7 @@ export default function Login() {
             const decoded = jwtDecode(credentialResponse.credential);
 
             // Send the decoded info to your backend
-            const res = await axios.post(
+            const res = await API.post(
                 "/auth/google-login",
                 {
                     email: decoded.email,

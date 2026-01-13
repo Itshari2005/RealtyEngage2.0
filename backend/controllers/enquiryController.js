@@ -6,6 +6,7 @@ import { sendEnquiryEmail } from "../utils/mailer.js";
 
 
 export const createEnquiry = async (req, res) => {
+  console.log("🚀 createEnquiry controller HIT");
   try {
     //  Create enquiry document
     const enquiry = new Enquiry({

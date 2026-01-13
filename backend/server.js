@@ -3,11 +3,13 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 import app from "./app.js";
+import connectDB from "./config/db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, ".env") });
+connectDB();
 
 const PORT = process.env.PORT || 5000;
 

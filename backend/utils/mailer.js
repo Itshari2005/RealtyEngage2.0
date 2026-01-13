@@ -12,14 +12,23 @@ const getTransporter = () => {
       },
     });
 
-    
+    // 🔍 VERIFY MAIL SERVER (TEMPORARY)
+    transporter.verify((error, success) => {
+      if (error) {
+        console.error("❌ Mail auth failed:", error.message);
+      } else {
+        console.log("✅ Mail server ready");
+      }
+    });
   }
   return transporter;
 };
 
 /* ------------------ SEND ENQUIRY EMAIL ------------------ */
 export const sendEnquiryEmail = async ({ to, name, projectName, message }) => {
-  const transporter = getTransporter(); 
+  console.log("📨 sendEnquiryEmail triggered for:", to);
+
+  const transporter = getTransporter();
 
   const htmlTemplate = `
   <div style="background:#f4f6f8;padding:40px 0;font-family:Arial,Helvetica,sans-serif">
@@ -97,7 +106,6 @@ export const sendEnquiryEmail = async ({ to, name, projectName, message }) => {
   </div>
 `;
 
-
   await transporter.sendMail({
     from: `"RealtyEngage" <${process.env.SENDER_EMAIL}>`,
     to,
@@ -106,7 +114,13 @@ export const sendEnquiryEmail = async ({ to, name, projectName, message }) => {
   });
 };
 
-export const sendSupportUserEmail = async ({ to, name, ticketId, subject, message }) => {
+export const sendSupportUserEmail = async ({
+  to,
+  name,
+  ticketId,
+  subject,
+  message,
+}) => {
   const transporter = getTransporter();
 
   const htmlTemplate = `
@@ -174,8 +188,13 @@ export const sendSupportUserEmail = async ({ to, name, ticketId, subject, messag
   });
 };
 
-
-export const sendSupportAdminEmail = async ({ ticketId, name, email, subject, message }) => {
+export const sendSupportAdminEmail = async ({
+  ticketId,
+  name,
+  email,
+  subject,
+  message,
+}) => {
   const transporter = getTransporter();
 
   const htmlTemplate = `
@@ -302,7 +321,6 @@ export const sendPaymentUserEmail = async ({
   });
 };
 
-
 export const sendPaymentAdminEmail = async ({
   customerName,
   customerEmail,
@@ -362,7 +380,6 @@ export const sendPaymentAdminEmail = async ({
     html: htmlTemplate,
   });
 };
-
 
 export const sendMonthlyPaymentUserEmail = async ({
   to,
@@ -441,7 +458,6 @@ export const sendMonthlyPaymentUserEmail = async ({
     html: htmlTemplate,
   });
 };
-
 
 export const sendMonthlyPaymentAdminEmail = async ({
   customerName,

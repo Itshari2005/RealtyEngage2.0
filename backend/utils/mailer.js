@@ -5,11 +5,16 @@ let transporter; // lazy singleton
 const getTransporter = () => {
   if (!transporter) {
     transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
       auth: {
         user: process.env.SENDER_EMAIL,
         pass: process.env.SENDER_PASSWORD,
       },
+      tls: {
+        rejectUnauthorized: false,
+      }
     });
 
     // 🔍 VERIFY MAIL SERVER (TEMPORARY)

@@ -111,12 +111,13 @@ export const sendEnquiryEmail = async ({ to, name, projectName, message }) => {
   </div>
 `;
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: `"RealtyEngage" <${process.env.SENDER_EMAIL}>`,
     to,
     subject: "Your Enquiry Has Been Received ✔",
     html: htmlTemplate,
   });
+  console.log("📨 Mail SENT, messageId:", info.messageId)
 };
 
 export const sendSupportUserEmail = async ({
@@ -185,12 +186,13 @@ export const sendSupportUserEmail = async ({
   </div>
   `;
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: `"RealtyEngage Support" <${process.env.SENDER_EMAIL}>`,
     to,
     subject: "Your Support Ticket Has Been Created 🎫",
     html: htmlTemplate,
   });
+  console.log("📨 Mail SENT, messageId:", info.messageId);
 };
 
 export const sendSupportAdminEmail = async ({
@@ -240,12 +242,13 @@ export const sendSupportAdminEmail = async ({
   </div>
   `;
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: `"Support Alert" <${process.env.SENDER_EMAIL}>`,
     to: "itskiragaming45@gmail.com",
     subject: "🚨 New Support Ticket Received",
     html: htmlTemplate,
   });
+  console.log("📨 Mail SENT, messageId:", info.messageId);
 };
 
 export const sendPaymentUserEmail = async ({
@@ -318,12 +321,13 @@ export const sendPaymentUserEmail = async ({
   </div>
   `;
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: `"RealtyEngage Accounts" <${process.env.SENDER_EMAIL}>`,
     to,
     subject: "Payment Recorded Successfully 💳",
     html: htmlTemplate,
   });
+  console.log("📨 Mail SENT, messageId:", info.messageId);
 };
 
 export const sendPaymentAdminEmail = async ({
@@ -378,12 +382,13 @@ export const sendPaymentAdminEmail = async ({
   </div>
   `;
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: `"Payment Alert" <${process.env.SENDER_EMAIL}>`,
     to: "itskiragaming45@gmail.com",
     subject: "💰 New Payment Recorded",
     html: htmlTemplate,
   });
+  console.log("📨 Mail SENT, messageId:", info.messageId);
 };
 
 export const sendMonthlyPaymentUserEmail = async ({
@@ -456,12 +461,13 @@ export const sendMonthlyPaymentUserEmail = async ({
   </div>
   `;
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: `"RealtyEngage Accounts" <${process.env.SENDER_EMAIL}>`,
     to,
     subject: "Monthly Payment Received ✔",
     html: htmlTemplate,
   });
+  console.log("📨 Mail SENT, messageId:", info.messageId);
 };
 
 export const sendMonthlyPaymentAdminEmail = async ({
@@ -516,10 +522,11 @@ export const sendMonthlyPaymentAdminEmail = async ({
   </div>
   `;
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: `"Payment Alert" <${process.env.SENDER_EMAIL}>`,
     to: "itskiragaming45@gmail.com",
     subject: "📩 Monthly Payment Received",
     html: htmlTemplate,
   });
+  console.log("📨 Mail SENT, messageId:", info.messageId);
 };

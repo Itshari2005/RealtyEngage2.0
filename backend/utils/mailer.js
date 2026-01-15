@@ -1,39 +1,10 @@
-import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 
-let transporter; // lazy singleton
-
-const getTransporter = () => {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.SENDER_EMAIL,
-        pass: process.env.SENDER_PASSWORD,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      }
-    });
-
-    // 🔍 VERIFY MAIL SERVER (TEMPORARY)
-    transporter.verify((error, success) => {
-      if (error) {
-        console.error("❌ Mail auth failed:", error.message);
-      } else {
-        console.log("✅ Mail server ready");
-      }
-    });
-  }
-  return transporter;
-};
+sgMail.setApiKey(process.env.SENDER_API_KEY);
 
 /* ------------------ SEND ENQUIRY EMAIL ------------------ */
 export const sendEnquiryEmail = async ({ to, name, projectName, message }) => {
   console.log("📨 sendEnquiryEmail triggered for:", to);
-
-  const transporter = getTransporter();
 
   const htmlTemplate = `
   <div style="background:#f4f6f8;padding:40px 0;font-family:Arial,Helvetica,sans-serif">
@@ -111,13 +82,13 @@ export const sendEnquiryEmail = async ({ to, name, projectName, message }) => {
   </div>
 `;
 
-  const info = await transporter.sendMail({
+  await sgMail.send({
     from: `"RealtyEngage" <${process.env.SENDER_EMAIL}>`,
     to,
     subject: "Your Enquiry Has Been Received ✔",
     html: htmlTemplate,
   });
-  console.log("📨 Mail SENT, messageId:", info.messageId)
+  console.log("📨 Mail SENT via SendGrid");
 };
 
 export const sendSupportUserEmail = async ({
@@ -127,7 +98,6 @@ export const sendSupportUserEmail = async ({
   subject,
   message,
 }) => {
-  const transporter = getTransporter();
 
   const htmlTemplate = `
   <div style="background:#f4f6f8;padding:40px 0;font-family:Arial,Helvetica,sans-serif">
@@ -186,13 +156,13 @@ export const sendSupportUserEmail = async ({
   </div>
   `;
 
-  const info = await transporter.sendMail({
+  await sgMail.send({
     from: `"RealtyEngage Support" <${process.env.SENDER_EMAIL}>`,
     to,
     subject: "Your Support Ticket Has Been Created 🎫",
     html: htmlTemplate,
   });
-  console.log("📨 Mail SENT, messageId:", info.messageId);
+  console.log("📨 Mail SENT via SendGrid");
 };
 
 export const sendSupportAdminEmail = async ({
@@ -202,7 +172,6 @@ export const sendSupportAdminEmail = async ({
   subject,
   message,
 }) => {
-  const transporter = getTransporter();
 
   const htmlTemplate = `
   <div style="background:#fff3f3;padding:40px 0;font-family:Arial,Helvetica,sans-serif">
@@ -242,13 +211,13 @@ export const sendSupportAdminEmail = async ({
   </div>
   `;
 
-  const info = await transporter.sendMail({
+  await sgMail.send({
     from: `"Support Alert" <${process.env.SENDER_EMAIL}>`,
     to: "itskiragaming45@gmail.com",
     subject: "🚨 New Support Ticket Received",
     html: htmlTemplate,
   });
-  console.log("📨 Mail SENT, messageId:", info.messageId);
+  console.log("📨 Mail SENT via SendGrid");
 };
 
 export const sendPaymentUserEmail = async ({
@@ -261,7 +230,6 @@ export const sendPaymentUserEmail = async ({
   pendingAmount,
   status,
 }) => {
-  const transporter = getTransporter();
 
   const htmlTemplate = `
   <div style="background:#f4f6f8;padding:40px 0;font-family:Arial,Helvetica,sans-serif">
@@ -321,13 +289,13 @@ export const sendPaymentUserEmail = async ({
   </div>
   `;
 
-  const info = await transporter.sendMail({
+  await sgMail.send({
     from: `"RealtyEngage Accounts" <${process.env.SENDER_EMAIL}>`,
     to,
     subject: "Payment Recorded Successfully 💳",
     html: htmlTemplate,
   });
-  console.log("📨 Mail SENT, messageId:", info.messageId);
+  console.log("📨 Mail SENT via SendGrid");
 };
 
 export const sendPaymentAdminEmail = async ({
@@ -340,7 +308,6 @@ export const sendPaymentAdminEmail = async ({
   pendingAmount,
   status,
 }) => {
-  const transporter = getTransporter();
 
   const htmlTemplate = `
   <div style="background:#fff7ed;padding:40px 0;font-family:Arial,Helvetica,sans-serif">
@@ -382,13 +349,13 @@ export const sendPaymentAdminEmail = async ({
   </div>
   `;
 
-  const info = await transporter.sendMail({
+  await sgMail.send({
     from: `"Payment Alert" <${process.env.SENDER_EMAIL}>`,
     to: "itskiragaming45@gmail.com",
     subject: "💰 New Payment Recorded",
     html: htmlTemplate,
   });
-  console.log("📨 Mail SENT, messageId:", info.messageId);
+  console.log("📨 Mail SENT via SendGrid");
 };
 
 export const sendMonthlyPaymentUserEmail = async ({
@@ -401,7 +368,6 @@ export const sendMonthlyPaymentUserEmail = async ({
   month,
   status,
 }) => {
-  const transporter = getTransporter();
 
   const htmlTemplate = `
   <div style="background:#f4f6f8;padding:40px 0;font-family:Arial,Helvetica,sans-serif">
@@ -461,13 +427,13 @@ export const sendMonthlyPaymentUserEmail = async ({
   </div>
   `;
 
-  const info = await transporter.sendMail({
+  await sgMail.send({
     from: `"RealtyEngage Accounts" <${process.env.SENDER_EMAIL}>`,
     to,
     subject: "Monthly Payment Received ✔",
     html: htmlTemplate,
   });
-  console.log("📨 Mail SENT, messageId:", info.messageId);
+  console.log("📨 Mail SENT via SendGrid");
 };
 
 export const sendMonthlyPaymentAdminEmail = async ({
@@ -480,7 +446,6 @@ export const sendMonthlyPaymentAdminEmail = async ({
   month,
   status,
 }) => {
-  const transporter = getTransporter();
 
   const htmlTemplate = `
   <div style="background:#fff7ed;padding:40px 0;font-family:Arial,Helvetica,sans-serif">
@@ -522,11 +487,11 @@ export const sendMonthlyPaymentAdminEmail = async ({
   </div>
   `;
 
-  const info = await transporter.sendMail({
+  await sgMail.send({
     from: `"Payment Alert" <${process.env.SENDER_EMAIL}>`,
     to: "itskiragaming45@gmail.com",
     subject: "📩 Monthly Payment Received",
     html: htmlTemplate,
   });
-  console.log("📨 Mail SENT, messageId:", info.messageId);
+  console.log("📨 Mail SENT via SendGrid");
 };

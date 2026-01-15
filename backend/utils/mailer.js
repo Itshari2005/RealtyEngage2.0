@@ -213,7 +213,7 @@ export const sendSupportAdminEmail = async ({
 
   await sgMail.send({
     from: `"Support Alert" <${process.env.SENDER_EMAIL}>`,
-    to: "itskiragaming45@gmail.com",
+    to: process.env.ADMIN_EMAIL,
     subject: "🚨 New Support Ticket Received",
     html: htmlTemplate,
   });
@@ -351,7 +351,7 @@ export const sendPaymentAdminEmail = async ({
 
   await sgMail.send({
     from: `"Payment Alert" <${process.env.SENDER_EMAIL}>`,
-    to: "itskiragaming45@gmail.com",
+    to: process.env.ADMIN_EMAIL,
     subject: "💰 New Payment Recorded",
     html: htmlTemplate,
   });
@@ -489,7 +489,7 @@ export const sendMonthlyPaymentAdminEmail = async ({
 
   await sgMail.send({
     from: `"Payment Alert" <${process.env.SENDER_EMAIL}>`,
-    to: "itskiragaming45@gmail.com",
+    to: process.env.ADMIN_EMAIL,
     subject: "📩 Monthly Payment Received",
     html: htmlTemplate,
   });

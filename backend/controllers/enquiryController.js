@@ -40,7 +40,7 @@ export const createEnquiry = async (req, res) => {
     //  Send notification email to ADMIN
     try {
       await sendEnquiryEmail({
-        to: "itskiragaming45@gmail.com",
+        to: process.env.ADMIN_EMAIL,
         name: "Admin",
         projectName: req.body.projectName || "Property Enquiry",
         message: `

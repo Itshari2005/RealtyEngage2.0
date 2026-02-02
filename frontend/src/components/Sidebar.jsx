@@ -17,6 +17,7 @@ export default function Sidebar() {
         { name: "Maintenance", path: "/admin/maintenance" },
         { name: "Enquiries", icon: <FaEnvelope />, path: "/admin/enquiries", color: "hover:text-yellow-400" },
         { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin/payments", color: "hover:text-green-400" },
+        { name: "Visits", icon: <FaUsers />, path: "/admin/visits", color: "hover:text-cyan-400" },
         { name: "Support", icon: <FaLifeRing />, path: "/admin/support", color: "hover:text-indigo-400" },
         { name: "Customers", icon: <FaUsers />, path: "/admin/customers", color: "hover:text-pink-400" },
     ];

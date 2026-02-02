@@ -35,6 +35,10 @@ import AdminMaintenance from "./pages/admin/Maintenance";
 import Privacy from "./pages/customer/Privacy";
 import Terms from "./pages/customer/Terms";
 import Careers from "./pages/customer/Careers";
+import ScheduleVisit from "./pages/customer/ScheduleVisit";
+import Visits from "./pages/admin/Visits";
+import MyVisits from "./pages/customer/MyVisits";
+
 
 // Auth Pages
 import Login from "./pages/Login";
@@ -77,6 +81,7 @@ export default function App() {
           <Route path="enquiries" element={<EnquiriesAdmin />} />
           <Route path="payments" element={<PaymentsAdmin />} />
           <Route path="support" element={<SupportAdmin />} />
+          <Route path="visits" element={<Visits />} />
         </Route>
 
         {/* Customer */}
@@ -99,10 +104,12 @@ export default function App() {
           <Route path="support" element={<SupportForm />} />
           <Route path="profile" element={<Profile />} />
           <Route path="maintenance" element={<Maintenance />} />
+          <Route path="my-visits" element={<MyVisits />} />
           <Route
             path="maintenance/request/:memberId"
             element={<MaintenanceRequest />}
           />
+          <Route path="visit/:projectId" element={<ScheduleVisit />} />
 
           {/* Static pages */}
           <Route path="about" element={<About />} />

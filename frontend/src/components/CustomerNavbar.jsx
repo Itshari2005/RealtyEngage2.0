@@ -57,6 +57,8 @@ export default function CustomerNavbar() {
                 <li><Link to="/customer/projects" className="block p-2 hover:text-blue-300 dark:hover:text-blue-400">Projects</Link></li>
                 <li><Link to="/customer/enquery" className="block p-2 hover:text-blue-300 dark:hover:text-blue-400">Enquiries</Link></li>
                 <li><Link to="/customer/support" className="block p-2 hover:text-blue-300 dark:hover:text-blue-400">Support</Link></li>
+                <li><Link to="/customer/my-visits" className="block p-2 hover:text-blue-300 dark:hover:text-blue-400">My Visits</Link></li>
+
                 <li ref={dropdownRef} className="relative">
                     <button
                         onClick={() => setProfileOpen(!profileOpen)}

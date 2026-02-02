@@ -10,6 +10,7 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import maintenanceRoutes from "./routes/maintenanceRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
+import visitRoutes from "./routes/visitRoutes.js";
 
 const app = express();
 
@@ -26,11 +27,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/enquiries", enquiryRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/visits", visitRoutes);
 app.use("/api/support", supportRoutes);
 
 app.use("/api/customers", customerRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
-
-
 
 export default app;

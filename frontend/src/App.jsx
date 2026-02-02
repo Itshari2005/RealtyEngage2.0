@@ -1,5 +1,10 @@
 // src/App.jsx
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 // Layouts
@@ -23,8 +28,10 @@ import SupportForm from "./pages/customer/SupportForm";
 import Enquery from "./pages/customer/Enquery";
 import Profile from "./pages/customer/Profile";
 import Maintenance from "./pages/customer/Maintenance";
+import MaintenanceRequest from "./pages/customer/MaintenanceRequest";
 import About from "./pages/customer/About";
 import Contact from "./pages/customer/Contact";
+import AdminMaintenance from "./pages/admin/Maintenance";
 import Privacy from "./pages/customer/Privacy";
 import Terms from "./pages/customer/Terms";
 import Careers from "./pages/customer/Careers";
@@ -65,6 +72,7 @@ export default function App() {
         >
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="projects" element={<ProjectsAdmin />} />
+          <Route path="maintenance" element={<AdminMaintenance />} />
           <Route path="customers" element={<Customers />} />
           <Route path="enquiries" element={<EnquiriesAdmin />} />
           <Route path="payments" element={<PaymentsAdmin />} />
@@ -91,6 +99,10 @@ export default function App() {
           <Route path="support" element={<SupportForm />} />
           <Route path="profile" element={<Profile />} />
           <Route path="maintenance" element={<Maintenance />} />
+          <Route
+            path="maintenance/request/:memberId"
+            element={<MaintenanceRequest />}
+          />
 
           {/* Static pages */}
           <Route path="about" element={<About />} />

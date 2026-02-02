@@ -14,6 +14,7 @@ export default function Sidebar() {
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/admin/dashboard", color: "hover:text-blue-400" },
         { name: "Projects", icon: <FaProjectDiagram />, path: "/admin/projects", color: "hover:text-purple-400" },
+        { name: "Maintenance", path: "/admin/maintenance" },
         { name: "Enquiries", icon: <FaEnvelope />, path: "/admin/enquiries", color: "hover:text-yellow-400" },
         { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin/payments", color: "hover:text-green-400" },
         { name: "Support", icon: <FaLifeRing />, path: "/admin/support", color: "hover:text-indigo-400" },

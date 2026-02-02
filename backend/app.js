@@ -8,6 +8,7 @@ import customerRoutes from "./routes/customerRoutes.js";
 import enquiryRoutes from "./routes/enquiryRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
+import maintenanceRoutes from "./routes/maintenanceRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
 
 const app = express();
@@ -28,6 +29,8 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/support", supportRoutes);
 
 app.use("/api/customers", customerRoutes);
+app.use("/api/maintenance", maintenanceRoutes);
+
 
 
 export default app;

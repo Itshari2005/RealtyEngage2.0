@@ -28,7 +28,7 @@ export default function Projects() {
         description: "",
         status: "upcoming",
         features: "",
-        priceRange: "",
+        price: "",
         image: "",
     });
     const [editingId, setEditingId] = useState(null);
@@ -79,13 +79,14 @@ export default function Projects() {
                 description: "",
                 status: "upcoming",
                 features: "",
-                priceRange: "",
+                price: "",
+                minDownPayment: "",
+                emiMonths: "",
                 image: "",
             });
             setEditingId(null);
             setShowForm(false);
             fetchProjects();
-            console.error("Error submitting project:", err.response?.data || err.message);
 
         } catch (err) {
             console.error("Error submitting project:", err);
@@ -100,7 +101,7 @@ export default function Projects() {
             description: project.description,
             status: project.status,
             features: project.features.join(", "),
-            priceRange: project.priceRange,
+            price: project.price,
             image: project.image,
         });
         setEditingId(project._id);
@@ -188,7 +189,9 @@ export default function Projects() {
                             description: "",
                             status: "upcoming",
                             features: "",
-                            priceRange: "",
+                            price: "",
+                            minDownPayment: "",
+                            emiMonths: "",
                             image: "",
                         });
                     }}
@@ -250,9 +253,9 @@ export default function Projects() {
                                 </label>
                                 <input
                                     type="text"
-                                    name="priceRange"
+                                    name="price"
                                     placeholder="e.g. Rs.500000"
-                                    value={formData.priceRange}
+                                    value={formData.price}
                                     onChange={handleChange}
                                     className="w-full p-3 border-0 bg-blue-50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-blue-900"
                                 />
@@ -304,6 +307,52 @@ export default function Projects() {
                                     className="w-full p-3 border-0 bg-blue-50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-blue-900"
                                 />
                             </div>
+
+                            {/* ✅ PRICE */}
+<div>
+  <label className="flex items-center gap-2 text-blue-700 font-semibold mb-2">
+    Total Price
+  </label>
+  <input
+    type="number"
+    name="price"
+    placeholder="Enter total price"
+    value={formData.price}
+    onChange={handleChange}
+    className="w-full p-3 border-0 bg-blue-50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-blue-900"
+  />
+</div>
+
+{/* ✅ DOWN PAYMENT */}
+<div>
+  <label className="flex items-center gap-2 text-blue-700 font-semibold mb-2">
+    Minimum Down Payment
+  </label>
+  <input
+    type="number"
+    name="minDownPayment"
+    placeholder="Enter down payment"
+    value={formData.minDownPayment}
+    onChange={handleChange}
+    className="w-full p-3 border-0 bg-blue-50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-blue-900"
+  />
+</div>
+
+{/* ✅ EMI MONTHS */}
+<div>
+  <label className="flex items-center gap-2 text-blue-700 font-semibold mb-2">
+    EMI Months
+  </label>
+  <input
+    type="number"
+    name="emiMonths"
+    placeholder="Enter number of months"
+    value={formData.emiMonths}
+    onChange={handleChange}
+    className="w-full p-3 border-0 bg-blue-50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-blue-900"
+  />
+</div>
+
 
                             <div>
                                 <label className="flex items-center gap-2 text-blue-700 font-semibold mb-2">
@@ -413,10 +462,10 @@ export default function Projects() {
                                 </div>
 
                                 {/* Price */}
-                                {project.priceRange && (
+                                {project.price && (
                                     <div className="flex items-center gap-2 text-green-600 mb-3">
                                         <FaRupeeSign  className="text-green-500" />
-                                        <span className="font-semibold">{project.priceRange}</span>
+                                        <span className="font-semibold">{project.price}</span>
                                     </div>
                                 )}
 

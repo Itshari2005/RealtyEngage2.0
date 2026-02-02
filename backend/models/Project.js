@@ -23,8 +23,19 @@ const projectSchema = new mongoose.Schema(
       type: [String], 
     },
 
-    priceRange: {
-      type: String, 
+    price: {
+      type: Number, 
+      required: true
+    },
+
+    minDownPayment:{
+      type: Number,
+      default: 0,
+    },
+
+    emiMonths:{
+      type: Number,
+      default: 12,
     },
 
     location: {

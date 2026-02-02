@@ -59,3 +59,78 @@ export const getAllPayments = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+export const requestPayment = async (req, res) => {
+  try {
+    const { paymentId, amount } = req.body;
+
+    const payment = await Payment.findById(paymentId);
+
+    payment.paymentRequests.push({
+      amount,
+      status: "pending",
+    });
+
+    await payment.save();
+
+    res.json({ message: "Payment request sent to admin" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const approvePayment = async (req, res) => {
+  try {
+    const { paymentId, requestIndex } = req.body;
+
+    const payment = await Payment.findById(paymentId);
+
+    const reqItem = payment.paymentRequests[requestIndex];
+
+    if (!reqItem) return res.status(400).json({ message: "Invalid request" });
+
+    reqItem.status = "approved";
+
+    payment.paidAmount += reqItem.amount;
+    payment.pendingAmount -= reqItem.amount;
+
+    if (payment.pendingAmount <= 0) {
+      payment.status = "paid";
+      payment.pendingAmount = 0;
+    }
+
+    await payment.save();
+
+    res.json(payment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const createEMIPlan = async (req, res) => {
+  try {
+    const { projectId, totalAmount, months, downPayment } = req.body;
+
+    const monthlyAmount = Math.ceil((totalAmount - downPayment) / months);
+
+    const payment = await Payment.findOneAndUpdate(
+  { customer: req.user.id, project: projectId },
+  {
+    totalAmount,
+    months,
+    monthlyAmount,
+    paidAmount: downPayment,
+    pendingAmount: totalAmount - downPayment,
+    status: "partial",
+  },
+  { new: true, upsert: true }  // ⭐ ADD THIS
+);
+
+    res.json(payment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+

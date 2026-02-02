@@ -1,101 +1,86 @@
 import { useEffect, useState } from "react";
 import API from "../../api/api";
-import { FaRupeeSign, FaUser, FaCheckCircle, FaClock } from "react-icons/fa";
+import { FaRupeeSign, FaUser } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 
 export default function AdminPayments() {
-    const [payments, setPayments] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const token = localStorage.getItem("token");
+  const [payments, setPayments] = useState([]);
 
-    useEffect(() => {
-        fetchPayments();
-    }, []);
+  useEffect(() => {
+    fetchPayments();
+  }, []);
 
-    const fetchPayments = async () => {
-        try {
-            const { data } = await API.get("/payments/admin", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setPayments(data);
-        } catch (err) {
-            console.error("Error fetching payments:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const fetchPayments = async () => {
+    const { data } = await API.get("/payments/admin");
+    setPayments(data);
+  };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-xl font-bold">Loading Payments...</p>
-                </div>
-            </div>
-        );
+  // ✅ approve EMI request
+  const approvePayment = async (paymentId, index) => {
+    try {
+      await API.put("/payments/approve", {
+        paymentId,
+        requestIndex: index,
+      });
+
+      toast.success("Payment approved");
+      fetchPayments();
+    } catch {
+      toast.error("Failed");
     }
+  };
 
-    return (
-        <div className="min-h-screen p-6 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-            <h1 className="text-3xl font-bold mb-6 text-blue-700">Payments Dashboard</h1>
+  return (
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-6">Payments Dashboard</h1>
 
-            {payments.length === 0 ? (
-                <div className="text-center text-blue-700">
-                    No payments recorded yet.
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {payments.map((p) => (
-  <div
-    key={p._id}
-    className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500"
-  >
-    <h3 className="text-xl font-bold text-blue-900 mb-2">
-      {p.customer?.name || "Unknown Customer"}
-    </h3>
-
-    <div className="text-sm text-blue-700 mb-2 flex items-center gap-2">
-      <FaUser /> {p.customer?.email || "No email"}
-    </div>
-
-    <div className="flex items-center gap-2 mb-2">
-      <span className="font-semibold text-blue-700">Project:</span>{" "}
-      {p.project?.name || "Not Assigned"}
-    </div>
-
-    <div className="flex items-center gap-2 mb-2">
-      <FaRupeeSign className="text-green-500" />
-      <span className="font-semibold text-green-700">Paid:</span>{" "}
-      {p.paidAmount ?? 0}
-    </div>
-
-    <div className="flex items-center gap-2 mb-2">
-      <FaRupeeSign className="text-yellow-500" />
-      <span className="font-semibold text-yellow-700">Pending:</span>{" "}
-      {p.pendingAmount ?? 0}
-    </div>
-
-    <div className="mb-2">
-      <span className="font-semibold">Plan:</span>{" "}
-      {p.plan || "N/A"}
-    </div>
-
-    <div className="mt-2">
-      {p.status === "paid" ? (
-        <span className="text-green-600 font-bold flex items-center gap-1">
-          <FaCheckCircle /> Paid
-        </span>
+      {payments.length === 0 ? (
+        <p>No payments recorded yet.</p>
       ) : (
-        <span className="text-yellow-600 font-bold flex items-center gap-1">
-          <FaClock /> {(p.status || "pending").charAt(0).toUpperCase() + (p.status || "pending").slice(1)}
-        </span>
+        payments.map((p) => (
+          <div
+            key={p._id}
+            className="bg-white p-6 rounded-xl shadow border mb-4"
+          >
+            <h3 className="font-bold text-lg">
+              {p.customer?.name}
+            </h3>
+
+            <p className="text-sm flex items-center gap-2">
+              <FaUser /> {p.customer?.email}
+            </p>
+
+            <p>Project: {p.project?.name}</p>
+
+            <p className="text-green-700">
+              Paid: ₹{p.paidAmount}
+            </p>
+
+            <p className="text-yellow-700">
+              Pending: ₹{p.pendingAmount}
+            </p>
+
+            <p>Status: {p.status}</p>
+
+            {/* ✅ Show pending requests */}
+            {p.paymentRequests?.map((r, i) =>
+              r.status === "pending" ? (
+                <button
+                  key={i}
+                  onClick={() => approvePayment(p._id, i)}
+                  className="mt-2 bg-green-600 text-white px-3 py-1 rounded"
+                >
+                  Approve ₹{r.amount}
+                </button>
+              ) : (
+                <p key={i} className="text-sm text-gray-500">
+                  ₹{r.amount} → {r.status}
+                </p>
+              )
+            )}
+          </div>
+        ))
       )}
     </div>
-  </div>
-))}
-
-                </div>
-            )}
-        </div>
-    );
+  );
 }

@@ -48,6 +48,31 @@ export default function Projects() {
         }
     };
 
+    // ✅ NEW — EMI plan creator
+  const handleEMI = async (project) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    await API.post(
+      "/payments/emi",
+      {
+        projectId: project._id,
+        totalAmount: project.price,
+        months: project.emiMonths,
+        downPayment: project.minDownPayment,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    toast.success("EMI plan created");
+  } catch (err) {
+        console.error(err.response?.data || err.message);
+        toast.error("EMI creation failed");
+  }
+};
+
 
     if (loading) return <p className="text-center mt-10">Loading projects...</p>;
 
@@ -74,7 +99,7 @@ export default function Projects() {
                             <h3 className="text-xl font-bold mb-1">{project.name}</h3>
                             <p><strong>Area:</strong> {project.area}</p>
                             <p><strong>Status:</strong> {project.status}</p>
-                            <p className="mt-4"><strong>Price:</strong> {project.priceRange}</p>
+                            <p className="mt-4"><strong>Price:</strong> {project.price}</p>
                             <p className="mt-2">
                                 <a
                                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.location)}`}
@@ -105,6 +130,14 @@ export default function Projects() {
                                         Schedule Visit
                                     </button>
                                 </Link>
+
+                                {/* ✅ EMI BUTTON */}
+                                <button
+                                    onClick={() => handleEMI(project)}
+                                    className="flex-1 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
+                                >
+                                    EMI Plan
+                                </button>
                             </div>
 
                         </div>

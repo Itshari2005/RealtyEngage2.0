@@ -13,22 +13,26 @@ const paymentSchema = new mongoose.Schema(
       required: true,
     },
 
-    // 🔥 NEW: token only
-    tokenAmount: {
-      type: Number,
-      required: true,
-    },
+    totalAmount: Number,
+    paidAmount: { type: Number, default: 0 },
+    pendingAmount: Number,
 
-    // reserved | confirmed | cancelled
+    months: Number,
+    monthlyAmount: Number,
+
     status: {
       type: String,
-      default: "reserved",
+      default: "partial",
     },
 
-    paidAt: {
-      type: Date,
-      default: Date.now,
-    },
+    // ✅ NEW (Option B)
+    paymentRequests: [
+      {
+        amount: Number,
+        status: { type: String, default: "pending" }, // pending/approved/rejected
+        requestedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );

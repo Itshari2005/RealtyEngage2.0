@@ -5,15 +5,26 @@ import { toast } from "react-hot-toast";
 
 export default function AdminPayments() {
   const [payments, setPayments] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     fetchPayments();
+    fetchAnalytics();
   }, []);
 
   const fetchPayments = async () => {
     const { data } = await API.get("/payments/admin");
-    setPayments(data);
+    setPayments([...data].reverse());
   };
+
+  const fetchAnalytics = async () => {
+  const { data } = await API.get("/payments/analytics", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  setAnalytics(data);
+};
+
 
   // ✅ approve EMI request
   const approvePayment = async (paymentId, index) => {
@@ -32,7 +43,43 @@ export default function AdminPayments() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Payments Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-6 text-blue-700">Payments Dashboard</h1>
+
+      {/* ✅ Analytics Cards */}
+{analytics && (
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+
+    <div className="bg-green-100 p-4 rounded-xl text-center">
+      <p className="text-sm text-gray-600">Total Collected</p>
+      <p className="text-xl font-bold text-green-700">
+        ₹{analytics.totalRevenue?.toLocaleString("en-IN")}
+      </p>
+    </div>
+
+    <div className="bg-yellow-100 p-4 rounded-xl text-center">
+      <p className="text-sm text-gray-600">Pending</p>
+      <p className="text-xl font-bold text-yellow-700">
+        ₹{analytics.totalPending?.toLocaleString("en-IN")}
+      </p>
+    </div>
+
+    <div className="bg-blue-100 p-4 rounded-xl text-center">
+      <p className="text-sm text-gray-600">Active EMI</p>
+      <p className="text-xl font-bold text-blue-700">
+        {analytics.emiActive}
+      </p>
+    </div>
+
+    <div className="bg-purple-100 p-4 rounded-xl text-center">
+      <p className="text-sm text-gray-600">Completed</p>
+      <p className="text-xl font-bold text-purple-700">
+        {analytics.completed}
+      </p>
+    </div>
+
+  </div>
+)}
+
 
       {payments.length === 0 ? (
         <p>No payments recorded yet.</p>
@@ -53,14 +100,28 @@ export default function AdminPayments() {
             <p>Project: {p.project?.name}</p>
 
             <p className="text-green-700">
-              Paid: ₹{p.paidAmount}
+              Paid: ₹{p.paidAmount?.toLocaleString()}
             </p>
 
             <p className="text-yellow-700">
-              Pending: ₹{p.pendingAmount}
+              Pending: ₹{p.pendingAmount?.toLocaleString()}
             </p>
 
-            <p>Status: {p.status}</p>
+            <p className="mt-1">
+  Status:
+  <span
+    className={`ml-2 px-2 py-1 rounded text-xs font-semibold ${
+      p.status === "paid"
+        ? "bg-green-100 text-green-700"
+        : p.status === "partial"
+        ? "bg-yellow-100 text-yellow-700"
+        : "bg-gray-100 text-gray-700"
+    }`}
+  >
+    {p.status}
+  </span>
+</p>
+
 
             {/* ✅ Show pending requests */}
             {p.paymentRequests?.map((r, i) =>
@@ -70,11 +131,11 @@ export default function AdminPayments() {
                   onClick={() => approvePayment(p._id, i)}
                   className="mt-2 bg-green-600 text-white px-3 py-1 rounded"
                 >
-                  Approve ₹{r.amount}
+                  Approve ₹{r.amount?.toLocaleString()}
                 </button>
               ) : (
                 <p key={i} className="text-sm text-gray-500">
-                  ₹{r.amount} → {r.status}
+                  ₹{r.amount?.toLocaleString()} → {r.status}
                 </p>
               )
             )}

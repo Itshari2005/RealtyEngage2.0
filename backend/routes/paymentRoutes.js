@@ -6,6 +6,7 @@ import {
   createEMIPlan,
   requestPayment,
   settleFullPayment,
+  getPaymentAnalytics,
   approvePayment
 } from "../controllers/paymentController.js";
 import { protect, admin } from "../middlewares/authMiddleware.js";
@@ -19,6 +20,8 @@ router.post("/emi", protect, createEMIPlan);
 router.post("/request", protect, requestPayment);
 router.put("/approve", protect, admin, approvePayment);
 router.put("/settle", protect, settleFullPayment);
+router.get("/analytics", protect, admin, getPaymentAnalytics);
+
 
 
 export default router;

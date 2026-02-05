@@ -159,6 +159,43 @@ export const settleFullPayment = async (req, res) => {
   }
 };
 
+/*
+  ADMIN → payment analytics
+*/
+export const getPaymentAnalytics = async (req, res) => {
+  try {
+    const payments = await Payment.find();
+
+    const totalRevenue = payments.reduce(
+      (sum, p) => sum + (p.paidAmount || p.tokenAmount || 0),
+      0
+    );
+
+    const totalPending = payments.reduce(
+      (sum, p) => sum + (p.pendingAmount || 0),
+      0
+    );
+
+    const emiActive = payments.filter(
+      (p) => p.status === "partial"
+    ).length;
+
+    const completed = payments.filter(
+      (p) => p.status === "paid"
+    ).length;
+
+    res.json({
+      totalRevenue,
+      totalPending,
+      emiActive,
+      completed,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 
 
 

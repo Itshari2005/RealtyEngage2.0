@@ -19,7 +19,7 @@ export default function MyVisits() {
 
       {visits.map((v) => (
         <div key={v._id} className="border p-4 mb-3 rounded shadow">
-          <p><b>Project:</b> {v.project.name}</p>
+          <p><b>Project:</b> {v.project?.name || "Project not available"}</p>
           <p>{v.date} | {v.time}</p>
           <p>Status: <b>{v.status}</b></p>
         </div>

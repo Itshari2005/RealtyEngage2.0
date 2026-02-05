@@ -132,5 +132,33 @@ export const createEMIPlan = async (req, res) => {
   }
 };
 
+/*
+  CUSTOMER → full settlement
+*/
+export const settleFullPayment = async (req, res) => {
+  try {
+    const { paymentId } = req.body;
+
+    const payment = await Payment.findById(paymentId);
+
+    if (!payment)
+      return res.status(404).json({ message: "Payment not found" });
+
+    if (payment.pendingAmount <= 0)
+      return res.status(400).json({ message: "Already paid" });
+
+    payment.paidAmount += payment.pendingAmount;
+    payment.pendingAmount = 0;
+    payment.status = "paid";
+
+    await payment.save();
+
+    res.json(payment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 
 

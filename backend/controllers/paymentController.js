@@ -37,7 +37,8 @@ export const reserveToken = async (req, res) => {
 export const getMyPayments = async (req, res) => {
   try {
     const payments = await Payment.find({ customer: req.user.id })
-      .populate("project");
+      .populate("project", "name")
+      .populate("customer", "name email");
 
     res.json(payments);
   } catch (err) {

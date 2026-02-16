@@ -7,6 +7,8 @@ export default function AdminPayments() {
   const [payments, setPayments] = useState([]);
   const [analytics, setAnalytics] = useState(null);
   const token = localStorage.getItem("token");
+  const [showRevenue, setShowRevenue] = useState(false);
+
 
   useEffect(() => {
     fetchPayments();
@@ -41,6 +43,14 @@ export default function AdminPayments() {
     }
   };
 
+  // ✅ Amount formatter (₹ → L / Cr)
+const formatAmount = (amount = 0) => {
+  if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(1)} Cr`;
+  if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)} L`;
+  return `₹${amount}`;
+};
+
+
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6 text-blue-700">Payments Dashboard</h1>
@@ -52,15 +62,27 @@ export default function AdminPayments() {
     <div className="bg-green-100 p-4 rounded-xl text-center">
       <p className="text-sm text-gray-600">Total Collected</p>
       <p className="text-xl font-bold text-green-700">
-        ₹{analytics.totalRevenue?.toLocaleString("en-IN")}
+        {formatAmount(analytics.totalRevenue)}
       </p>
+      <button
+  onClick={() => setShowRevenue(true)}
+  className="text-xs text-blue-600 underline mt-1"
+>
+  View exact amount
+</button>
     </div>
 
     <div className="bg-yellow-100 p-4 rounded-xl text-center">
       <p className="text-sm text-gray-600">Pending</p>
       <p className="text-xl font-bold text-yellow-700">
-        ₹{analytics.totalPending?.toLocaleString("en-IN")}
+        {formatAmount(analytics.totalPending)}
       </p>
+      <button
+  onClick={() => setShowRevenue(true)}
+  className="text-xs text-blue-600 underline mt-1"
+>
+  View exact amount
+</button>
     </div>
 
     <div className="bg-blue-100 p-4 rounded-xl text-center">
@@ -142,6 +164,24 @@ export default function AdminPayments() {
           </div>
         ))
       )}
+      {showRevenue && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-xl shadow-lg w-80 text-center">
+      <h3 className="text-lg font-bold mb-2">Exact Revenue</h3>
+      <p className="text-xl text-green-700 font-semibold">
+        ₹{analytics.totalRevenue}
+      </p>
+
+      <button
+        onClick={() => setShowRevenue(false)}
+        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

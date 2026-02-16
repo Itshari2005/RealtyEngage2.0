@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { FaBars, FaHome, FaProjectDiagram, FaUsers, FaMoneyBillWave, FaEnvelope, FaLifeRing, FaSignOutAlt } from "react-icons/fa";
+import { FaTools, FaBars, FaHome, FaProjectDiagram, FaUsers, FaMoneyBillWave, FaEnvelope, FaLifeRing, FaSignOutAlt } from "react-icons/fa";
 
 export default function Sidebar() {
     const navigate = useNavigate();
@@ -14,7 +14,7 @@ export default function Sidebar() {
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/admin/dashboard", color: "hover:text-blue-400" },
         { name: "Projects", icon: <FaProjectDiagram />, path: "/admin/projects", color: "hover:text-purple-400" },
-        { name: "Maintenance", path: "/admin/maintenance" },
+        { name: "Maintenance", icon: <FaTools />, path: "/admin/maintenance", color: "hover:text-red-400" },
         { name: "Enquiries", icon: <FaEnvelope />, path: "/admin/enquiries", color: "hover:text-yellow-400" },
         { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin/payments", color: "hover:text-green-400" },
         { name: "Visits", icon: <FaUsers />, path: "/admin/visits", color: "hover:text-cyan-400" },

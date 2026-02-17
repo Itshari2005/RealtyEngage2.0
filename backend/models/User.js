@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Phone number is required"],
     },
+    lifecycleStatus: {
+      type: String,
+      default: "New",
+    },
     role: {
       type: String,
       enum: ["admin", "customer"],  

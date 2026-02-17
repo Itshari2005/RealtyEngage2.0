@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Payment from "../models/Payment.js";
+import User from "../models/User.js";
 
 /*
   CUSTOMER → reserve token
@@ -13,6 +14,11 @@ export const reserveToken = async (req, res) => {
       customer: new mongoose.Types.ObjectId(req.user.id),
       project: new mongoose.Types.ObjectId(projectId),
     });
+
+    await User.findByIdAndUpdate(req.user.id, {
+      lifecycleStatus: "Booked",
+    });
+
 
     if (existing) {
       return res.status(400).json({ message: "Already reserved" });
@@ -127,7 +133,12 @@ export const createEMIPlan = async (req, res) => {
   { new: true, upsert: true }  // ⭐ ADD THIS
 );
 
+
     res.json(payment);
+    await User.findByIdAndUpdate(req.user.id, {
+      lifecycleStatus: "Booked",
+    });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -155,6 +166,10 @@ export const settleFullPayment = async (req, res) => {
     await payment.save();
 
     res.json(payment);
+    await User.findByIdAndUpdate(payment.customer, {
+      lifecycleStatus: "Owner",
+    });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

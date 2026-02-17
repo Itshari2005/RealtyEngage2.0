@@ -1,6 +1,6 @@
 
 import Enquiry from "../models/Enquiry.js";
-
+import User from "../models/User.js";
 import { sendEnquiryEmail } from "../utils/mailer.js";
 
 
@@ -17,13 +17,12 @@ export const createEnquiry = async (req, res) => {
     //  Save to DB
     const savedEnquiry = await enquiry.save();
 
-    // Send response
-    res.status(201).json({
-      success: true,
-      message: "Enquiry created successfully",
-      enquiry: savedEnquiry,
-    });
-
+    const user = await User.findById(req.user._id);
+    if(!user.lifecycleStatus || user.lifecycleStatus === "New") {
+      user.lifecycleStatus = "Interested";
+      await user.save();
+    }
+    
     //  Send confirmation email to CUSTOMER
     try {
       await sendEnquiryEmail({
@@ -54,6 +53,13 @@ export const createEnquiry = async (req, res) => {
     } catch (mailError) {
       console.error("Admin email failed:", mailError.message);
     }
+
+        // Send response
+    res.status(201).json({
+      success: true,
+      message: "Enquiry created successfully",
+      enquiry: savedEnquiry,
+    });
 
   } catch (error) {
     res.status(500).json({

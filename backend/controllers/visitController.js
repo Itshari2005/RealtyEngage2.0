@@ -1,4 +1,5 @@
 import Visit from "../models/Visit.js";
+import User from "../models/User.js";
 
 /* =========================
    CUSTOMER → create visit
@@ -16,6 +17,10 @@ export const createVisit = async (req, res) => {
     });
 
     res.status(201).json(visit);
+    await User.findByIdAndUpdate(req.user.id, {
+      lifecycleStatus: "Visit Scheduled",
+    });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

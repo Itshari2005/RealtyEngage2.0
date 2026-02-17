@@ -1,5 +1,6 @@
 import MaintenanceMember from "../models/MaintenanceMember.js";
 import MaintenanceRequest from "../models/MaintenanceRequest.js";
+import User from "../models/User.js";
 
 // ADMIN – Add maintenance member
 export const addMaintenanceMember = async (req, res) => {
@@ -24,6 +25,12 @@ export const getMaintenanceMembers = async (req, res) => {
 // CUSTOMER – Submit maintenance request (optional tracking)
 export const createMaintenanceRequest = async (req, res) => {
   try {
+    if (req.user?.id) {
+      await User.findByIdAndUpdate(req.user.id, {
+        lifecycleStatus: "Post-Sale",
+      });
+    }
+
     const request = await MaintenanceRequest.create({
       ...req.body,
       customer: req.user?.id || null,

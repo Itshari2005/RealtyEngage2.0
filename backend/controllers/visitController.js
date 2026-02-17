@@ -64,7 +64,20 @@ export const updateVisitStatus = async (req, res) => {
       req.params.id,
       { status },
       { new: true }
-    );
+    ).populate("customer");
+
+    // ✅ UPDATE CUSTOMER LIFECYCLE BASED ON VISIT STATUS
+    if (status === "approved") {
+      await User.findByIdAndUpdate(visit.customer._id, {
+        lifecycleStatus: "Visit Approved",
+      });
+    }
+
+    if (status === "completed") {
+      await User.findByIdAndUpdate(visit.customer._id, {
+        lifecycleStatus: "Visited",
+      });
+    }
 
     res.json(visit);
   } catch (err) {

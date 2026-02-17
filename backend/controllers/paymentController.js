@@ -15,11 +15,6 @@ export const reserveToken = async (req, res) => {
       project: new mongoose.Types.ObjectId(projectId),
     });
 
-    await User.findByIdAndUpdate(req.user.id, {
-      lifecycleStatus: "Booked",
-    });
-
-
     if (existing) {
       return res.status(400).json({ message: "Already reserved" });
     }
@@ -29,6 +24,10 @@ export const reserveToken = async (req, res) => {
       project: projectId,
       tokenAmount,
       status: "reserved",
+    });
+
+    await User.findByIdAndUpdate(req.user.id, {
+      lifecycleStatus: "Booked",
     });
 
     res.status(201).json(payment);
@@ -133,11 +132,11 @@ export const createEMIPlan = async (req, res) => {
   { new: true, upsert: true }  // ⭐ ADD THIS
 );
 
-
-    res.json(payment);
     await User.findByIdAndUpdate(req.user.id, {
       lifecycleStatus: "Booked",
     });
+    res.json(payment);
+    
 
   } catch (err) {
     res.status(500).json({ message: err.message });

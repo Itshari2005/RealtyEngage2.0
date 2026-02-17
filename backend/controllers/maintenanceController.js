@@ -45,3 +45,50 @@ export const getMaintenanceRequests = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// ADMIN – Assign maintenance member
+export const assignMaintenanceMember = async (req, res) => {
+  try {
+    const { requestId, memberId } = req.body;
+
+    const request = await MaintenanceRequest.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    request.maintenanceMember = memberId;
+    request.status = "Assigned";
+    request.assignedAt = new Date();
+
+    await request.save();
+    res.json(request);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ADMIN – Update maintenance status
+export const updateMaintenanceStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, adminRemarks } = req.body;
+
+    const request = await MaintenanceRequest.findById(id);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    request.status = status;
+
+    if (status === "In Progress") request.startedAt = new Date();
+    if (status === "Completed") request.completedAt = new Date();
+
+    if (adminRemarks) request.adminRemarks = adminRemarks;
+
+    await request.save();
+    res.json(request);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+

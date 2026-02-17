@@ -31,6 +31,10 @@ const maintenanceRequestSchema = new mongoose.Schema(
       type: String,
       default: "Submitted", // Submitted | Contacted
     },
+    assignedAt: Date,
+    startedAt: Date,
+    completedAt: Date,
+    adminRemarks: String,
   },
   { timestamps: true }
 );

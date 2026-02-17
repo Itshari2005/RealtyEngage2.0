@@ -25,16 +25,18 @@ export const getMaintenanceMembers = async (req, res) => {
 // CUSTOMER – Submit maintenance request (optional tracking)
 export const createMaintenanceRequest = async (req, res) => {
   try {
-    if (req.user?.id) {
-      await User.findByIdAndUpdate(req.user.id, {
-        lifecycleStatus: "Post-Sale",
-      });
-    }
 
     const request = await MaintenanceRequest.create({
       ...req.body,
       customer: req.user?.id || null,
     });
+
+    if (req.user?.id) {
+      await User.findByIdAndUpdate(req.user.id, {
+        lifecycleStatus: "Post-Sale",
+      });
+    }
+    
     res.status(201).json(request);
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -164,10 +164,11 @@ export const settleFullPayment = async (req, res) => {
 
     await payment.save();
 
-    res.json(payment);
     await User.findByIdAndUpdate(payment.customer, {
       lifecycleStatus: "Owner",
     });
+    
+    res.json(payment);
 
   } catch (err) {
     res.status(500).json({ message: err.message });

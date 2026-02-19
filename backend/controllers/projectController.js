@@ -18,7 +18,25 @@ export const createProject = async (req, res) => {
 // @desc    Get all projects
 export const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find().populate("createdBy", "name email role");
+    const { search, status, minPrice, maxPrice } = req.query;
+    let query = {};
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { area: { $regex: search, $options: "i" } },
+      ];
+    }
+    // 📌 Filter by status
+    if (status) {
+      query.status = status;
+    }
+    // 💰 Filter by price range
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+    const projects = await Project.find(query);
     res.status(200).json(projects);
   } catch (error) {
     res.status(500).json({ message: "Error fetching projects", error: error.message });

@@ -157,6 +157,26 @@ export default function Customers() {
                                             <p className="text-blue-600 text-sm">
                                                 Joined {new Date(customer.createdAt).toLocaleDateString()}
                                             </p>
+                                            {customer.lifecycleStatus && (
+  <span
+    className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full ${
+      customer.lifecycleStatus === "New"
+        ? "bg-gray-200 text-gray-800"
+        : customer.lifecycleStatus === "Interested"
+        ? "bg-yellow-100 text-yellow-800"
+        : customer.lifecycleStatus === "Visit Scheduled"
+        ? "bg-blue-100 text-blue-800"
+        : customer.lifecycleStatus === "Booked"
+        ? "bg-green-100 text-green-800"
+        : customer.lifecycleStatus === "Post-Sale"
+        ? "bg-purple-100 text-purple-800"
+        : "bg-gray-100 text-gray-600"
+    }`}
+  >
+    {customer.lifecycleStatus}
+  </span>
+)}
+
                                         </div>
                                     </div>
                                 </div>

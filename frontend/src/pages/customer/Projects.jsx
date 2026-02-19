@@ -7,12 +7,18 @@ import { Link } from "react-router-dom";
 export default function Projects() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
+    const [minPrice, setMinPrice] = useState("");
+    const [maxPrice, setMaxPrice] = useState("");
+
 
     useEffect(() => {
         const fetchProjects = async () => {
             try {
                 const token = localStorage.getItem("token");
                 const { data } = await API.get("/projects", {
+                    params: { searchTerm, status: statusFilter, minPrice, maxPrice },
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setProjects(data);
@@ -24,7 +30,7 @@ export default function Projects() {
             }
         };
         fetchProjects();
-    }, []);
+    }, [searchTerm, statusFilter, minPrice, maxPrice]);
 
     const handleReserve = async (project) => {
         try {
@@ -75,16 +81,69 @@ export default function Projects() {
 
 
     if (loading) return <p className="text-center mt-10">Loading projects...</p>;
+    const filteredProjects = projects.filter((project) => {
+    const matchesSearch =
+        project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        project.area.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+        statusFilter === "" || project.status === statusFilter;
+
+    const matchesMin =
+        minPrice === "" || project.price >= Number(minPrice);
+
+    const matchesMax =
+        maxPrice === "" || project.price <= Number(maxPrice);
+
+    return matchesSearch && matchesStatus && matchesMin && matchesMax;
+});
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
             <h2 className="text-3xl font-bold mb-6 text-center">Projects</h2>
 
+            <div className="grid md:grid-cols-4 gap-4 mb-6">
+  <input
+    type="text"
+    placeholder="Search by name or area"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="border p-2 rounded"
+  />
+
+  <select
+    value={statusFilter}
+    onChange={(e) => setStatusFilter(e.target.value)}
+    className="border p-2 rounded"
+  >
+    <option value="">All Status</option>
+    <option value="upcoming">Upcoming</option>
+    <option value="in-progress">In Progress</option>
+    <option value="completed">Completed</option>
+  </select>
+
+  <input
+    type="number"
+    placeholder="Min Price"
+    value={minPrice}
+    onChange={(e) => setMinPrice(e.target.value)}
+    className="border p-2 rounded"
+  />
+
+  <input
+    type="number"
+    placeholder="Max Price"
+    value={maxPrice}
+    onChange={(e) => setMaxPrice(e.target.value)}
+    className="border p-2 rounded"
+  />
+</div>
+
             {projects.length === 0 ? (
                 <p>No projects available.</p>
             ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {projects.map((project) => (
+                    {filteredProjects.map((project) => (
                         <div
                             key={project._id}
                             className="p-4 border rounded-xl shadow-lg hover:shadow-xl transition relative"

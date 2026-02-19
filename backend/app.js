@@ -11,6 +11,7 @@ import projectRoutes from "./routes/projectRoutes.js";
 import maintenanceRoutes from "./routes/maintenanceRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
 import visitRoutes from "./routes/visitRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 
@@ -32,5 +33,6 @@ app.use("/api/support", supportRoutes);
 
 app.use("/api/customers", customerRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
+app.use("/api/users", userRoutes);
 
 export default app;

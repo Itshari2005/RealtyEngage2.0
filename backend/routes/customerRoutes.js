@@ -7,6 +7,12 @@ import {
   getProfile,
   updateProfile,
 } from "../controllers/customerController.js";
+import {
+  addToWishlist,
+  removeFromWishlist,
+  getWishlist
+} from "../controllers/customerController.js";
+
 
 import { admin, protect } from "../middlewares/authMiddleware.js";
 
@@ -30,6 +36,8 @@ router.put("/:id", protect, admin, updateCustomer);
 // Admin: Delete customer
 router.delete("/:id", protect, admin, deleteCustomer);
 
-
+router.get("/wishlist", protect, getWishlist);
+router.post("/wishlist/:projectId", protect, addToWishlist);
+router.delete("/wishlist/:projectId", protect, removeFromWishlist);
 
 export default router;

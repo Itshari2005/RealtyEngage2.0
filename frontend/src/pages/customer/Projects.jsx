@@ -3,6 +3,7 @@ import API from "../../api/api";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 
 export default function Projects() {
     const [projects, setProjects] = useState([]);
@@ -11,7 +12,7 @@ export default function Projects() {
     const [statusFilter, setStatusFilter] = useState("");
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
-
+    const [wishlistIds, setWishlistIds] = useState([]);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -31,6 +32,42 @@ export default function Projects() {
         };
         fetchProjects();
     }, [searchTerm, statusFilter, minPrice, maxPrice]);
+
+    const fetchWishlist = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const { data } = await API.get("/projects/my-wishlist", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    setWishlistIds(data.map(p => p._id));
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+useEffect(() => {
+  fetchWishlist();
+}, []);
+
+const toggleWishlist = async (projectId) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const { data } = await API.post(
+  `/projects/wishlist-toggle/${projectId}`,
+  {},
+  {
+    headers: { Authorization: `Bearer ${token}` },
+  }
+);
+
+setWishlistIds(data.wishlist);
+toast.success(data.message);
+  } catch (err) {
+    toast.error(err.message || "Wishlist update failed");
+  }
+};
 
     const handleReserve = async (project) => {
         try {
@@ -148,6 +185,16 @@ export default function Projects() {
                             key={project._id}
                             className="p-4 border rounded-xl shadow-lg hover:shadow-xl transition relative"
                         >
+                            <button
+  onClick={() => toggleWishlist(project._id)}
+  className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-lg transition-all duration-200 hover:scale-110 active:scale-90"
+>
+  {wishlistIds.includes(project._id) ? (
+    <BsBookmarkFill className="text-blue-600 text-lg" />
+  ) : (
+    <BsBookmark className="text-gray-700 text-lg" />
+  )}
+</button>
                             {project.image && (
                                 <img
                                     src={project.image}
@@ -170,7 +217,7 @@ export default function Projects() {
                                 </a>
                             </p>
 
-                            <div className="flex gap-3 mt-4">
+                            <div className="grid grid-cols-2 gap-3 mt-4">
                                 <Link to="/customer/enquery" className="flex-1">
                                     <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
                                         Enquire
@@ -179,13 +226,13 @@ export default function Projects() {
 
                                 <button
                                     onClick={() => handleReserve(project)}
-                                    className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+                                    className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
                                 >
                                     Reserve Unit
                                 </button>
 
                                 <Link to={`/customer/visit/${project._id}`}>
-                                    <button className="bg-purple-600 text-white py-2 rounded">
+                                    <button className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition">
                                         Schedule Visit
                                     </button>
                                 </Link>
@@ -193,7 +240,7 @@ export default function Projects() {
                                 {/* ✅ EMI BUTTON */}
                                 <button
                                     onClick={() => handleEMI(project)}
-                                    className="flex-1 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
+                                    className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
                                 >
                                     EMI Plan
                                 </button>

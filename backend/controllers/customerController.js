@@ -82,3 +82,45 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Error updating profile", error: error.message });
   }
 };
+
+export const addToWishlist = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user.wishlist.includes(req.params.projectId)) {
+      user.wishlist.push(req.params.projectId);
+      await user.save();
+    }
+
+    res.status(200).json({ message: "Added to wishlist" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const removeFromWishlist = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    user.wishlist = user.wishlist.filter(
+      (id) => id.toString() !== req.params.projectId
+    );
+
+    await user.save();
+
+    res.status(200).json({ message: "Removed from wishlist" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getWishlist = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate("wishlist");
+    res.status(200).json(user.wishlist);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+

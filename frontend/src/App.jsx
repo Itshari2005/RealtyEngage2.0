@@ -38,6 +38,7 @@ import Careers from "./pages/customer/Careers";
 import ScheduleVisit from "./pages/customer/ScheduleVisit";
 import Visits from "./pages/admin/Visits";
 import MyVisits from "./pages/customer/MyVisits";
+import Wishlist from "./pages/customer/Wishlist";
 
 
 // Auth Pages
@@ -105,6 +106,7 @@ export default function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="maintenance" element={<Maintenance />} />
           <Route path="my-visits" element={<MyVisits />} />
+          <Route path="wishlist" element={<Wishlist />} />
           <Route
             path="maintenance/request/:memberId"
             element={<MaintenanceRequest />}

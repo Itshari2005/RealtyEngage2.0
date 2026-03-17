@@ -5,14 +5,21 @@ import {
   getProjectById,
   updateProject,
   deleteProject,
+  toggleWishlist,
+  getWishlist,
 } from "../controllers/projectController.js";
 
 import { protect, admin } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-// Public routes
 router.get("/", getProjects);
+
+// Wishlist routes 
+router.get("/my-wishlist", protect, getWishlist);
+router.post("/wishlist-toggle/:id", protect, toggleWishlist);
+
+// Dynamic routes
 router.get("/:id", getProjectById);
 
 // Admin routes

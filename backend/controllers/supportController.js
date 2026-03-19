@@ -1,5 +1,5 @@
 import Support from "../models/Support.js";
-
+import Notification from "../models/Notification.js";
 import { 
   sendSupportUserEmail, 
   sendSupportAdminEmail 
@@ -13,6 +13,13 @@ export const createSupport = async (req, res) => {
     });
 
     const savedSupport = await support.save();
+
+    // 🔔 Notification
+    await Notification.create({
+      user: req.user._id,
+      message: "Your support request has been submitted",
+      type: "support",
+    });
 
     res.status(201).json(savedSupport);
 

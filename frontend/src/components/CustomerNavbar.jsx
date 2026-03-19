@@ -1,13 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { FaBars, FaUser, FaMoon, FaSun } from "react-icons/fa";
+import { FaBars, FaUser, FaMoon, FaSun, FaBell } from "react-icons/fa";
+import API from "../api/api";
 
 export default function CustomerNavbar() {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const dropdownRef = useRef(null);
-
+    const [notifications, setNotifications] = useState([]);
+    const [notifOpen, setNotifOpen] = useState(false);
     const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark");
 
     useEffect(() => {
@@ -25,6 +27,7 @@ export default function CustomerNavbar() {
         const handleClickOutside = (e) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
                 setProfileOpen(false);
+                setNotifOpen(false);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -35,6 +38,30 @@ export default function CustomerNavbar() {
         localStorage.clear();
         navigate("/login");
     };
+
+    const fetchNotifications = async () => {
+        try {
+            const { data } = await API.get("/notifications", {
+                headers: {
+                    "Cache-Control": "no-cache",
+                },
+            });
+            setNotifications(data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const markAsRead = async (id) => {
+        console.log("Clicked notification:", id);
+        try {
+            await API.put(`/notifications/${id}/read`);
+            await fetchNotifications();
+        // update UI instantly
+    } catch (err) {
+        console.error(err);
+    }
+};
 
     return (
         <nav className="bg-blue-900 dark:bg-gray-900 text-white dark:text-gray-200 p-4 flex justify-between items-center relative">
@@ -122,7 +149,61 @@ export default function CustomerNavbar() {
                     </ul>
                 </li>
 
-               
+                <li className="relative">
+    <button
+        onClick={() => {
+            const newState = !notifOpen
+            setNotifOpen(newState);
+            setProfileOpen(false); // close profile dropdown if open
+
+            if(newState){
+                fetchNotifications(); // refresh notifications when opening
+            }
+        }}
+
+        className="relative p-2 hover:text-blue-300"
+    >
+        <FaBell className="text-xl" />
+
+        {/* 🔴 Unread badge */}
+        {notifications.filter(n => !n.read).length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1 rounded-full">
+                {notifications.filter(n => !n.read).length}
+            </span>
+        )}
+    </button>
+
+    {/* 📜 Dropdown */}
+    {notifOpen && (
+        <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 z-50">
+            <h3 className="font-bold mb-2 text-black dark:text-white">
+                Notifications
+            </h3>
+
+            {notifications.length === 0 ? (
+                <p className="text-sm text-gray-500">No notifications</p>
+            ) : (
+                notifications.map((n) => (
+  <div
+    key={n._id}
+    onClick={() => markAsRead(n._id)}
+    className={`p-3 mb-2 rounded-lg text-sm cursor-pointer transition flex justify-between items-center ${
+      n.read
+        ? "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+        : "bg-blue-600 text-white hover:bg-blue-700"
+    }`}
+  >
+    <span className="font-medium">{n.message}</span>
+
+    {!n.read && (
+      <span className="w-2 h-2 bg-white rounded-full"></span>
+    )}
+  </div>
+))
+            )}
+        </div>
+    )}
+</li>
 
                 {/* Dark mode toggle */}
                 <li>

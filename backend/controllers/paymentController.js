@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Payment from "../models/Payment.js";
 import User from "../models/User.js";
+import Notification from "../models/Notification.js";
 
 /*
   CUSTOMER → reserve token
@@ -28,6 +29,12 @@ export const reserveToken = async (req, res) => {
 
     await User.findByIdAndUpdate(req.user.id, {
       lifecycleStatus: "Booked",
+    });
+
+    await Notification.create({
+      user: req.user.id,
+      message: "Your property has been reserved successfully (Token Paid)",
+      type: "payment",
     });
 
     res.status(201).json(payment);
@@ -79,6 +86,12 @@ export const requestPayment = async (req, res) => {
 
     await payment.save();
 
+    await Notification.create({
+      user: req.user.id,
+      message: "Payment request sent to admin",
+      type: "payment",
+    });
+
     res.json({ message: "Payment request sent to admin" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -106,6 +119,12 @@ export const approvePayment = async (req, res) => {
     }
 
     await payment.save();
+
+    await Notification.create({
+      user: payment.customer,
+      message: "Your payment has been approved",
+      type: "payment",
+    });
 
     res.json(payment);
   } catch (err) {
@@ -136,7 +155,12 @@ export const createEMIPlan = async (req, res) => {
       lifecycleStatus: "Booked",
     });
     res.json(payment);
-    
+
+    await Notification.create({
+      user: req.user.id,
+      message: "EMI plan created successfully",
+      type: "payment",
+    }); 
 
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -166,6 +190,12 @@ export const settleFullPayment = async (req, res) => {
 
     await User.findByIdAndUpdate(payment.customer, {
       lifecycleStatus: "Owner",
+    });
+
+    await Notification.create({
+      user: payment.customer,
+      message: "Full payment completed. You are now the owner 🎉",
+      type: "payment",
     });
     
     res.json(payment);

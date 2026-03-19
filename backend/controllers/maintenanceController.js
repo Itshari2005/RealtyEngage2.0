@@ -1,6 +1,7 @@
 import MaintenanceMember from "../models/MaintenanceMember.js";
 import MaintenanceRequest from "../models/MaintenanceRequest.js";
 import User from "../models/User.js";
+import Notification from "../models/Notification.js";
 
 // ADMIN – Add maintenance member
 export const addMaintenanceMember = async (req, res) => {
@@ -30,6 +31,14 @@ export const createMaintenanceRequest = async (req, res) => {
       ...req.body,
       customer: req.user?.id || null,
     });
+
+    if (req.user?.id) {
+      await Notification.create({
+        user: req.user.id,
+        message: "Your maintenance request has been submitted",
+        type: "maintenance",
+      });
+    }
 
     if (req.user?.id) {
       await User.findByIdAndUpdate(req.user.id, {
@@ -70,6 +79,14 @@ export const assignMaintenanceMember = async (req, res) => {
     request.assignedAt = new Date();
 
     await request.save();
+
+    if (request.customer) {
+      await Notification.create({
+        user: request.customer,
+        message: "A technician has been assigned to your request",
+        type: "maintenance",
+      });
+    }
     res.json(request);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -95,6 +112,24 @@ export const updateMaintenanceStatus = async (req, res) => {
     if (adminRemarks) request.adminRemarks = adminRemarks;
 
     await request.save();
+
+    if (request.customer) {
+  let message = "";
+
+  if (status === "In Progress") {
+    message = "Your maintenance request is now in progress";
+  } else if (status === "Completed") {
+    message = "Your maintenance request has been completed";
+  }
+
+  if (message) {
+    await Notification.create({
+      user: request.customer,
+      message,
+      type: "maintenance",
+    });
+  }
+}
     res.json(request);
   } catch (error) {
     res.status(500).json({ message: error.message });

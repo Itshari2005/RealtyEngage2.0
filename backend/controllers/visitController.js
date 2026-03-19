@@ -1,5 +1,6 @@
 import Visit from "../models/Visit.js";
 import User from "../models/User.js";
+import Notification from "../models/Notification.js";
 
 /* =========================
    CUSTOMER → create visit
@@ -14,12 +15,21 @@ export const createVisit = async (req, res) => {
       date,
       time,
       notes,
+
     });
 
-    res.status(201).json(visit);
+    
     await User.findByIdAndUpdate(req.user.id, {
       lifecycleStatus: "Visit Scheduled",
     });
+
+    await Notification.create({
+      user: req.user.id,
+      message: "Your visit has been scheduled successfully",
+      type: "visit",
+    });
+
+    res.status(201).json(visit);
 
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -71,11 +81,23 @@ export const updateVisitStatus = async (req, res) => {
       await User.findByIdAndUpdate(visit.customer._id, {
         lifecycleStatus: "Visit Approved",
       });
+
+      await Notification.create({
+        user: visit.customer._id,
+        message: "Your visit has been approved",
+        type: "visit",
+      });
     }
 
     if (status === "completed") {
       await User.findByIdAndUpdate(visit.customer._id, {
         lifecycleStatus: "Visited",
+      });
+
+      await Notification.create({
+        user: visit.customer._id,
+        message: "Your visit has been marked as completed",
+        type: "visit",
       });
     }
 

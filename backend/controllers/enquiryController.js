@@ -2,8 +2,7 @@
 import Enquiry from "../models/Enquiry.js";
 import User from "../models/User.js";
 import { sendEnquiryEmail } from "../utils/mailer.js";
-
-
+import Notification from "../models/Notification.js";
 
 export const createEnquiry = async (req, res) => {
   console.log("🚀 createEnquiry controller HIT");
@@ -16,6 +15,12 @@ export const createEnquiry = async (req, res) => {
 
     //  Save to DB
     const savedEnquiry = await enquiry.save();
+
+    await Notification.create({
+      user: req.user._id,
+      message: "Your enquiry has been submitted successfully",
+      type: "enquiry",
+    });
 
     const user = await User.findById(req.user._id);
     if(!user.lifecycleStatus || user.lifecycleStatus === "New") {

@@ -12,6 +12,7 @@ import maintenanceRoutes from "./routes/maintenanceRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
 import visitRoutes from "./routes/visitRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 const app = express();
 
@@ -30,7 +31,7 @@ app.use("/api/enquiries", enquiryRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/visits", visitRoutes);
 app.use("/api/support", supportRoutes);
-
+app.use("/api/notifications", notificationRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/users", userRoutes);

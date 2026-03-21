@@ -117,13 +117,13 @@ export default function CustomerNavbar() {
                             </Link>
                         </li>
                         <li>
-  <Link
-    to="/customer/wishlist"
-    className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-  >
-    My Wishlist
-  </Link>
-</li>
+                            <Link
+                                to="/customer/wishlist"
+                                className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            >
+                                My Wishlist
+                            </Link>
+                        </li>
                         <li>
                             <Link
                                 to="/customer/profile"

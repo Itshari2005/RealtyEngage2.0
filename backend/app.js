@@ -13,9 +13,9 @@ import supportRoutes from "./routes/supportRoutes.js";
 import visitRoutes from "./routes/visitRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import botRoutes from "./routes/botRoutes.js"
 
 const app = express();
-
 // Middlewares
 app.use(express.json());
 app.use(cors());
@@ -35,5 +35,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/bot", botRoutes);
+
 
 export default app;

@@ -3,6 +3,9 @@ import User from "../models/User.js";
 import Payment from "../models/Payment.js";
 import Project from "../models/Project.js";
 import Visit from "../models/Visit.js";
+import MaintenanceRequest from "../models/maintenanceRequest.js";
+import Enquiry from "../models/Enquiry.js";
+import Support from "../models/Support.js";
 
 export const chatWithBot = async (req, res) => {
   try {
@@ -13,8 +16,8 @@ export const chatWithBot = async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // ─── Fetch real data from MongoDB ───
-    const user = await User.findById(userId).select("name email");
+    // ─── Fetch all customer data from MongoDB ───
+    const user = await User.findById(userId).select("name email number");
 
     const payments = await Payment.find({ customer: userId })
       .populate("project", "name location price")
@@ -28,12 +31,24 @@ export const chatWithBot = async (req, res) => {
       .populate("project", "name location")
       .lean();
 
+    const maintenanceRequests = await MaintenanceRequest.find({ customer: userId })
+      .lean();
+
+    const enquiries = await Enquiry.find({ customer: userId })
+      .populate("project", "name")
+      .lean();
+
+    const supportTickets = await Support.find({ customer: userId })
+      .lean();
+
     // ─── Build context string ───
     const customerContext = `
 CUSTOMER INFORMATION:
 - Name: ${user?.name || "N/A"}
 - Email: ${user?.email || "N/A"}
+- Phone: ${user?.number || "N/A"}
 
+═══════════════════════════════════════
 AVAILABLE PROJECTS (${projects.length} total):
 ${projects.map((p, i) =>
   `${i + 1}. ${p.name}
@@ -47,6 +62,7 @@ ${projects.map((p, i) =>
    - Features: ${p.features?.join(", ") || "N/A"}`
 ).join("\n\n")}
 
+═══════════════════════════════════════
 CUSTOMER PAYMENTS (${payments.length} total):
 ${payments.length === 0 ? "No payments found." :
   payments.map((p, i) =>
@@ -60,6 +76,7 @@ ${payments.length === 0 ? "No payments found." :
    - Payment Requests: ${p.paymentRequests?.length || 0} request(s)`
   ).join("\n\n")}
 
+═══════════════════════════════════════
 CUSTOMER SITE VISITS (${visits.length} total):
 ${visits.length === 0 ? "No visits scheduled." :
   visits.map((v, i) =>
@@ -69,23 +86,66 @@ ${visits.length === 0 ? "No visits scheduled." :
    - Status: ${v.status}
    - Notes: ${v.notes || "N/A"}`
   ).join("\n\n")}
+
+═══════════════════════════════════════
+MAINTENANCE REQUESTS (${maintenanceRequests.length} total):
+${maintenanceRequests.length === 0 ? "No maintenance requests found." :
+  maintenanceRequests.map((m, i) =>
+    `${i + 1}. Category: ${m.category || "N/A"}
+   - Issue: ${m.issueDescription}
+   - Address: ${m.customerAddress}
+   - Status: ${m.status}
+   - Submitted: ${new Date(m.createdAt).toLocaleDateString()}
+   - Assigned At: ${m.assignedAt ? new Date(m.assignedAt).toLocaleDateString() : "Not yet assigned"}
+   - Completed At: ${m.completedAt ? new Date(m.completedAt).toLocaleDateString() : "Not yet completed"}
+   - Admin Remarks: ${m.adminRemarks || "No remarks yet"}`
+  ).join("\n\n")}
+
+═══════════════════════════════════════
+ENQUIRIES (${enquiries.length} total):
+${enquiries.length === 0 ? "No enquiries found." :
+  enquiries.map((e, i) =>
+    `${i + 1}. Project: ${e.project?.name || "N/A"}
+   - Message: ${e.message}
+   - Status: ${e.status}
+   - Date: ${new Date(e.date).toLocaleDateString()}`
+  ).join("\n\n")}
+
+═══════════════════════════════════════
+SUPPORT TICKETS (${supportTickets.length} total):
+${supportTickets.length === 0 ? "No support tickets found." :
+  supportTickets.map((s, i) =>
+    `${i + 1}. Type: ${s.requestType}
+   - Subject: ${s.subject}
+   - Message: ${s.message}
+   - Status: ${s.status}
+   - Date: ${new Date(s.date).toLocaleDateString()}`
+  ).join("\n\n")}
 `;
 
     const SYSTEM_PROMPT = `
 You are RealtyBot, a helpful AI assistant for RealtyEngage — a real estate customer engagement platform.
 
-You have access to the customer's real data shown below. Use this data to give accurate, specific answers.
-NEVER say "check your dashboard" — always answer directly from the data provided.
-If something is truly not in the data, say "I don't have that information right now."
+You have access to the customer's complete real data shown below. Use this data to give accurate, specific answers.
+
+IMPORTANT RULES:
+- NEVER say "check your dashboard" — always answer directly from the data provided
+- NEVER say "I don't have access to that" if the data is provided below
+- If data truly doesn't exist, say "I don't have that information right now"
+- Always address the customer by their name
+- Give specific numbers, dates, and statuses from the data
+- For maintenance contact, tell them to submit a request through the Maintenance page on the platform
+- For scheduling visits, tell them to go to the Projects page and click "Schedule Visit"
 
 ${customerContext}
 
 You help customers with:
-- Questions about available projects and properties
-- EMI payment plans and payment details
-- Site visit scheduling and status
-- Maintenance requests
-- General platform navigation
+- Available projects, pricing, features and EMI options
+- Their payment status, EMI plans and pending amounts
+- Site visit scheduling and approval status
+- Maintenance request status and updates
+- Enquiry and support ticket status
+- General platform navigation guidance
 
 Always be polite, concise, and professional.
 Do not answer questions unrelated to real estate or this platform.

@@ -1,5 +1,5 @@
 import MaintenanceMember from "../models/MaintenanceMember.js";
-import MaintenanceRequest from "../models/MaintenanceRequest.js";
+import MaintenanceRequest from "../models/maintenanceRequest.js";
 import User from "../models/User.js";
 import Notification from "../models/Notification.js";
 

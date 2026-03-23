@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import CustomerNavbar from "../components/CustomerNavbar";
 import Footer from "../components/Footer";
 import Chat from "../components/Chat";
+import RealtyBot from "../components/RealtyBot";
 
 export default function CustomerLayout() {
     return (
@@ -14,7 +15,7 @@ export default function CustomerLayout() {
             <main className="flex-1 p-6 mt-4">
                 <Outlet />  
             </main>
-            
+            <RealtyBot />
             <Chat/>
             <Footer />
         </div>

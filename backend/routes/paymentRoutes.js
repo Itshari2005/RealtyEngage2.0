@@ -7,7 +7,9 @@ import {
   requestPayment,
   settleFullPayment,
   getPaymentAnalytics,
-  approvePayment
+  approvePayment,
+  createOrder,      
+  verifyPayment,
 } from "../controllers/paymentController.js";
 import { protect, admin } from "../middlewares/authMiddleware.js";
 
@@ -21,7 +23,8 @@ router.post("/request", protect, requestPayment);
 router.put("/approve", protect, admin, approvePayment);
 router.put("/settle", protect, settleFullPayment);
 router.get("/analytics", protect, admin, getPaymentAnalytics);
-
+router.post("/create-order", protect, createOrder);
+router.post("/verify", protect, verifyPayment);
 
 
 export default router;

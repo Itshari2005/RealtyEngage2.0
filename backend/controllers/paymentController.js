@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 import Payment from "../models/Payment.js";
 import User from "../models/User.js";
 import Notification from "../models/Notification.js";
-
+import Razorpay from "razorpay";
+import crypto from "crypto";
 /*
   CUSTOMER → reserve token
 */
@@ -241,7 +242,100 @@ export const getPaymentAnalytics = async (req, res) => {
   }
 };
 
+// Create Razorpay Order
+export const createOrder = async (req, res) => {
+  try {
+    const { amount } = req.body;
 
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    const order = await razorpay.orders.create({
+      amount: amount * 100, // convert to paise
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    });
+
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Verify Razorpay Payment
+export const verifyPayment = async (req, res) => {
+  try {
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      paymentId,
+      amount,
+      type, // "emi" or "full"
+    } = req.body;
+
+    // Verify signature
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(body)
+      .digest("hex");
+
+    if (expectedSignature !== razorpay_signature) {
+      return res.status(400).json({ message: "Payment verification failed" });
+    }
+
+    // Update payment in DB
+    const payment = await Payment.findById(paymentId);
+    if (!payment) return res.status(404).json({ message: "Payment not found" });
+
+    if (type === "full") {
+      payment.paidAmount += payment.pendingAmount;
+      payment.pendingAmount = 0;
+      payment.status = "paid";
+
+      await User.findByIdAndUpdate(payment.customer, {
+        lifecycleStatus: "Owner",
+      });
+
+      await Notification.create({
+        user: payment.customer,
+        message: "Full payment completed online. You are now the owner 🎉",
+        type: "payment",
+      });
+
+    } else {
+      // EMI payment
+      payment.paidAmount += amount;
+      payment.pendingAmount -= amount;
+
+      if (payment.pendingAmount <= 0) {
+        payment.pendingAmount = 0;
+        payment.status = "paid";
+      }
+
+      payment.paymentRequests.push({
+        amount,
+        status: "approved",
+        requestedAt: new Date(),
+      });
+
+      await Notification.create({
+        user: payment.customer,
+        message: `EMI payment of ₹${amount} completed successfully`,
+        type: "payment",
+      });
+    }
+
+    await payment.save();
+    res.json({ success: true, payment });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 
 

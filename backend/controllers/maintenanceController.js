@@ -1,5 +1,5 @@
 import MaintenanceMember from "../models/MaintenanceMember.js";
-import MaintenanceRequest from "../models/maintenanceRequest.js";
+import MaintenanceRequest from "../models/MaintenanceRequest.js";
 import User from "../models/User.js";
 import Notification from "../models/Notification.js";
 
@@ -26,7 +26,6 @@ export const getMaintenanceMembers = async (req, res) => {
 // CUSTOMER – Submit maintenance request (optional tracking)
 export const createMaintenanceRequest = async (req, res) => {
   try {
-
     const request = await MaintenanceRequest.create({
       ...req.body,
       customer: req.user?.id || null,
@@ -45,7 +44,7 @@ export const createMaintenanceRequest = async (req, res) => {
         lifecycleStatus: "Post-Sale",
       });
     }
-    
+
     res.status(201).json(request);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -114,25 +113,24 @@ export const updateMaintenanceStatus = async (req, res) => {
     await request.save();
 
     if (request.customer) {
-  let message = "";
+      let message = "";
 
-  if (status === "In Progress") {
-    message = "Your maintenance request is now in progress";
-  } else if (status === "Completed") {
-    message = "Your maintenance request has been completed";
-  }
+      if (status === "In Progress") {
+        message = "Your maintenance request is now in progress";
+      } else if (status === "Completed") {
+        message = "Your maintenance request has been completed";
+      }
 
-  if (message) {
-    await Notification.create({
-      user: request.customer,
-      message,
-      type: "maintenance",
-    });
-  }
-}
+      if (message) {
+        await Notification.create({
+          user: request.customer,
+          message,
+          type: "maintenance",
+        });
+      }
+    }
     res.json(request);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-

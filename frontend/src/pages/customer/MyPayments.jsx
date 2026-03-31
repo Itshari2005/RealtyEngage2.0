@@ -258,7 +258,7 @@ export default function MyPayments() {
               )}
 
               {/* ── ACTION BUTTONS ── */}
-              <div className="mt-5 space-y-3">
+              <div className="mt-5 flex flex-col gap-3">
 
                 {/* Pay EMI via Razorpay */}
                 {p.pendingAmount > 0 && p.monthlyAmount && (

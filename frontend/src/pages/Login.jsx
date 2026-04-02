@@ -161,7 +161,7 @@ export default function Login() {
                     {loading ? "Logging in..." : "Login"}
                 </button>
 
-                <p className="text-sm mt-4 text-center">
+                <p className="text-sm mt-4 text-gray-600 text-center">
                     Don’t have an account?{" "}
                     <span
                         className="text-blue-700 cursor-pointer hover:text-blue-900"
